@@ -1,9 +1,16 @@
 import React from 'react';
+import ChatInput from './ChatInput';
+import MessageList from './MessageList';
 
 type Props = {};
 
 const s = (props: Props) => {
-  return <div className="text-4xl">Next.js 13</div>;
+  return (
+    <main>
+      <MessageList />
+      <ChatInput />
+    </main>
+  );
 };
 
 export default s;
