@@ -1,4 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { serverPusher } from '../../pusher';
 import redis from '../../redis';
 import { Message } from '../../typings';
 
@@ -29,6 +30,11 @@ export default async function handler(
 
   // pushing hashset to redis (upstash)
   await redis.hset('messages', message.id, JSON.stringify(preparedMessage));
+
+  // trigger pusher to update subscribers with new data
+  serverPusher.trigger('messages-channel', 'new-message-event', {
+    ...preparedMessage,
+  });
 
   res.status(200).json({ message: preparedMessage });
 }

@@ -1,15 +1,24 @@
 'use client';
 
 import React, { FormEvent, useState } from 'react';
+import useSWR from 'swr';
 import { v4 as uuid } from 'uuid';
 import { Message } from '../typings';
+import fetchMessages from '../utils/fetchMessages';
 
 type Props = {};
 
 const ChatInput = (props: Props) => {
   const [inputValue, setInputValue] = useState('');
+  const {
+    data: messages = [],
+    error,
+    mutate,
+  } = useSWR('messages', fetchMessages);
 
-  const addMessage = (e: FormEvent<HTMLFormElement>) => {
+  // console.log('fetched data: ', messages);
+
+  const addMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const messageToSend = inputValue;
@@ -35,17 +44,21 @@ const ChatInput = (props: Props) => {
         body: JSON.stringify({ message }),
       });
 
-      const data = await response.json();
+      const parsedReponse = await response.json();
 
-      console.log('Message added: ', data);
+      return [parsedReponse.message, ...messages];
     };
 
-    sendToUpstash();
+    // sendToUpstash();
+    await mutate(sendToUpstash, {
+      optimisticData: [message, ...messages!],
+      rollbackOnError: true,
+    });
   };
 
   return (
     <form
-      className="flex w-full px-10 py-5 space-x-2 border-t border-gray-100 fixed bottom-0 z-50"
+      className="flex w-full px-10 py-5 space-x-2 border-t border-gray-100 bg-white fixed bottom-0 z-50"
       onSubmit={addMessage}
     >
       <input
