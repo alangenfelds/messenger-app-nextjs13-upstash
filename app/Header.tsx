@@ -1,12 +1,14 @@
 import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+
 import LogoutButton from './LogoutButton';
+import { unstable_getServerSession } from 'next-auth';
 
 type Props = {};
 
-const Header = (props: Props) => {
-  const session = true;
+const Header = async (props: Props) => {
+  const session = await unstable_getServerSession();
 
   if (session) {
     return (
@@ -14,15 +16,15 @@ const Header = (props: Props) => {
         <div className="flex space-x-2">
           <Image
             className="rounded-full mx-2 object-contain"
-            // src={session?.user?.image!}
-            src="https://links.papareact.com/jne"
+            src={session?.user?.image!}
+            // src="https://links.papareact.com/jne"
             height={10}
             width={50}
             alt="Profile picture"
           />
           <div>
             <p className="text-blue-400">Logged in as:</p>
-            <p className="font-bold text-lg">User name</p>
+            <p className="font-bold text-lg">{session?.user?.name}</p>
           </div>
         </div>
 

@@ -1,7 +1,10 @@
+import { unstable_getServerSession } from 'next-auth';
 import React from 'react';
+
 import { Message } from '../typings';
 import ChatInput from './ChatInput';
 import MessageList from './MessageList';
+import { Providers } from './providers';
 
 type Props = {};
 
@@ -11,13 +14,17 @@ const HomePage = async (props: Props) => {
     (res) => res.json()
   );
 
+  const session = await unstable_getServerSession();
+
   const messages: Message[] = data.messages;
 
   return (
-    <main>
-      <MessageList initialMessages={messages} />
-      <ChatInput />
-    </main>
+    <Providers session={session}>
+      <main>
+        <MessageList initialMessages={messages} />
+        <ChatInput session={session} />
+      </main>
+    </Providers>
   );
 };
 

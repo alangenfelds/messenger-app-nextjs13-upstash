@@ -1,14 +1,18 @@
 'use client';
 
+import { unstable_getServerSession } from 'next-auth';
 import React, { FormEvent, useState } from 'react';
 import useSWR from 'swr';
 import { v4 as uuid } from 'uuid';
+
 import { Message } from '../typings';
 import fetchMessages from '../utils/fetchMessages';
 
-type Props = {};
+type Props = {
+  session: Awaited<ReturnType<typeof unstable_getServerSession>>;
+};
 
-const ChatInput = (props: Props) => {
+const ChatInput = ({ session }: Props) => {
   const [inputValue, setInputValue] = useState('');
   const {
     data: messages = [],
@@ -21,6 +25,8 @@ const ChatInput = (props: Props) => {
   const addMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    if (!inputValue || !session) return;
+
     const messageToSend = inputValue;
     setInputValue('');
 
@@ -29,10 +35,9 @@ const ChatInput = (props: Props) => {
       id,
       message: messageToSend,
       created_at: Date.now(),
-      username: 'Artur',
-      profilePic:
-        'https://scontent.frix1-1.fna.fbcdn.net/v/t39.30808-1/254351141_4807033485986891_4631954783949453800_n.jpg?stp=dst-jpg_p200x200&_nc_cat=106&ccb=1-7&_nc_sid=7206a8&_nc_ohc=yaznaxQ5QtgAX_WQonR&tn=VxK6rLqZd_324o5h&_nc_ht=scontent.frix1-1.fna&oh=00_AfAxnLyxzOx_h-JQzvzezhJ2C397jR572vK4ov4vIQG67w&oe=63740BA6',
-      email: 'alangenfeld@gmail.com',
+      username: session?.user?.name || '',
+      profilePic: session?.user?.image || '',
+      email: session?.user?.email || '',
     };
 
     const sendToUpstash = async () => {
@@ -62,6 +67,7 @@ const ChatInput = (props: Props) => {
       onSubmit={addMessage}
     >
       <input
+        disabled={!session}
         type="text"
         placeholder="Enter message here..."
         className="flex-1 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent px-5 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
