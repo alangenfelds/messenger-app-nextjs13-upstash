@@ -7,9 +7,11 @@ import { Message } from '../typings';
 import fetchMessages from '../utils/fetchMessages';
 import MessageItem from './MessageItem';
 
-type Props = {};
+type Props = {
+  initialMessages: Message[];
+};
 
-const MessageList = (props: Props) => {
+const MessageList = ({ initialMessages }: Props) => {
   const {
     data: messages,
     error,
@@ -45,7 +47,7 @@ const MessageList = (props: Props) => {
 
   return (
     <div className="space-y-5 pt-8 pb-32 max-w-2xl xl:max-w-4xl mx-auto">
-      {messages?.map((message) => (
+      {(messages || initialMessages).map((message) => (
         <MessageItem key={message.id + Date.now()} message={message} />
       ))}
     </div>

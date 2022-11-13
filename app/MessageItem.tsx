@@ -44,7 +44,7 @@ const MessageItem = ({ message }: Props) => {
               isSender ? 'text-right' : ''
             }`}
           >
-            {new Date(message.created_at).toLocaleString()}
+            {new Date(message.created_at).toLocaleString('en-US')}
           </p>
         </div>
       </div>
