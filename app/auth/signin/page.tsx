@@ -13,10 +13,10 @@ const SignInPage = async (props: Props) => {
       <div>
         <Image
           className="mt-10 ml-11 rounded-full mx-2 object-contain"
-          src="https://links.papareact.com/jne"
-          height={56}
-          width={100}
-          alt="Profile picture"
+          src="/images/meta_logo.webp"
+          height={150}
+          width={120}
+          alt="Meta logo"
         />
       </div>
 
